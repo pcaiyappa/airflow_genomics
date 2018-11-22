@@ -1,0 +1,52 @@
+https://airflow.readthedocs.io/en/1.9.0/configuration.html
+
+Configuration
+
+Setting up the sandbox in the Quick Start section was easy; building a production-grade environment requires a bit more work!
+Setting Configuration Options
+
+The first time you run Airflow, it will create a file called airflow.cfg in your $AIRFLOW_HOME directory (~/airflow by default). This file contains Airflow’s configuration and you can edit it to change any of the settings. You can also set options with environment variables by using this format: $AIRFLOW__{SECTION}__{KEY} (note the double underscores).
+
+For example, the metadata database connection string can either be set in airflow.cfg like this:
+
+[core]
+sql_alchemy_conn = my_conn_string
+
+or by creating a corresponding environment variable:
+
+AIRFLOW__CORE__SQL_ALCHEMY_CONN=my_conn_string
+
+You can also derive the connection string at run time by appending _cmd to the key like this:
+
+[core]
+sql_alchemy_conn_cmd = bash_command_to_run
+
+But only three such configuration elements namely sql_alchemy_conn, broker_url and celery_result_backend can be fetched as a command. The idea behind this is to not store passwords on boxes in plain text files. The order of precedence is as follows -
+
+    environment variable
+    configuration in airflow.cfg
+    command in airflow.cfg
+    default
+
+
+
+Initializing a Database Backend
+
+If you want to take a real test drive of Airflow, you should consider setting up a real database backend and switching to the LocalExecutor.
+
+As Airflow was built to interact with its metadata using the great SqlAlchemy library, you should be able to use any database backend supported as a SqlAlchemy backend. We recommend using MySQL or Postgres.
+
+Note
+
+We rely on more strict ANSI SQL settings for MySQL in order to have sane defaults. Make sure to have specified explicit_defaults_for_timestamp=1 in your my.cnf under [mysqld]
+
+Note
+
+If you decide to use Postgres, we recommend using the psycopg2 driver and specifying it in your SqlAlchemy connection string. Also note that since SqlAlchemy does not expose a way to target a specific schema in the Postgres connection URI, you may want to set a default schema for your role with a command similar to ALTER ROLE username SET search_path = airflow, foobar;
+
+Once you’ve setup your database to host Airflow, you’ll need to alter the SqlAlchemy connection string located in your configuration file $AIRFLOW_HOME/airflow.cfg. You should then also change the “executor” setting to use “LocalExecutor”, an executor that can parallelize task instances locally.
+
+# initialize the database
+airflow initdb
+
+
