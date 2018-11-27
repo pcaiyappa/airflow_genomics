@@ -1,5 +1,0 @@
-airflow-webserver.pid
-unittests.cfg
-logs/
-airflow.cfg~
-*__pycache__
