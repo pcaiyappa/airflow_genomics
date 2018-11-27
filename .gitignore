@@ -1,0 +1,6 @@
+airflow-webserver.pid
+unittests.cfg
+logs/
+*~
+*__pycache__*
+*pdf
